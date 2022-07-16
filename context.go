@@ -19,6 +19,9 @@ type Context struct {
 	StatusCode int
 	// 路径中的参数
 	Params map[string]string
+	// 支持中间件
+	handlers HandlersChain
+	index    int8
 }
 
 func newContext(w http.ResponseWriter, req *http.Request) *Context {
@@ -28,6 +31,15 @@ func newContext(w http.ResponseWriter, req *http.Request) *Context {
 		Path:   req.URL.Path,
 		Method: req.Method,
 		Params: make(map[string]string),
+		index:  -1,
+	}
+}
+
+func (c *Context) Next() {
+	c.index++
+	for c.index < int8(len(c.handlers)) {
+		c.handlers[c.index](c)
+		c.index++
 	}
 }
 

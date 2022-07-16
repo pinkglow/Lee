@@ -70,16 +70,14 @@ func (r *router) getRoute(method, path string) (node *node, params map[string]st
 }
 
 func (r *router) handle(c *Context) {
-	n, params := r.getRoute(c.Method, c.Path)
-	if n != nil {
+	if n, params := r.getRoute(c.Method, c.Path); n != nil {
 		c.Params = params
 		rule := getRouterRule(c.Method, n.pattern)
-		// 调用对应的 handler 去处理请求
-		r.handlers[rule](c)
+		c.handlers = append(c.handlers, r.handlers[rule])
 	} else {
 		c.String(http.StatusNotFound, "404 NOT FOUND: %s\n", c.Path)
 	}
-
+	c.Next()
 }
 
 // 通过HTTP Method 和 pattern 得到路由规则
