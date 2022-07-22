@@ -50,6 +50,19 @@ func (n *node) insertNode(pattern string) {
 	n._insertNode(pattern, parts, 0)
 }
 
+// HasPrefix 用于判断是否含有某个前缀
+func (n *node) HasPrefix(prefix string) bool {
+	return n._HasPrefix(prefix)
+}
+
+func (n *node) _HasPrefix(prefix string) bool {
+	parts := parsePattern(prefix)
+	if n._findNode(parts, 0, true) != nil {
+		return true
+	}
+	return false
+}
+
 // matchChildren 用来遍历节点 n 下面所有与 part 相匹配的节点
 func (n *node) matchChildren(part string) []*node {
 	nodes := make([]*node, 0)
@@ -62,10 +75,10 @@ func (n *node) matchChildren(part string) []*node {
 }
 
 // findNode 获取路径对应的 node
-func (n *node) _findNode(parts []string, height int) *node {
+func (n *node) _findNode(parts []string, height int, isFindPrefix bool) *node {
 	if height == len(parts) || strings.HasPrefix(n.part, "*") {
 		// 说明查找失败
-		if n.pattern == "" {
+		if n.pattern == "" && isFindPrefix == false {
 			return nil
 		}
 		return n
@@ -76,7 +89,7 @@ func (n *node) _findNode(parts []string, height int) *node {
 
 	// 在与当前节点匹配的所有子节点中搜索
 	for _, child := range children {
-		result := child._findNode(parts, height+1)
+		result := child._findNode(parts, height+1, isFindPrefix)
 		if result != nil {
 			return result
 		}
@@ -86,7 +99,7 @@ func (n *node) _findNode(parts []string, height int) *node {
 
 func (n *node) findNode(pattern string) *node {
 	parts := parsePattern(pattern)
-	return n._findNode(parts, 0)
+	return n._findNode(parts, 0, false)
 }
 
 // getFullPathNodes 遍历整棵树，找到所有有完整路径的节点
