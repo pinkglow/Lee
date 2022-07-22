@@ -1,5 +1,7 @@
 package lee
 
+import "net/http"
+
 type RouteGroup struct {
 	basePath string        // 分组的公众前缀
 	handlers HandlersChain // 提供中间件支持
@@ -30,9 +32,9 @@ func (group *RouteGroup) Use(middleware ...HandlerFunc) {
 }
 
 func (group *RouteGroup) POST(relativePath string, handlerFunc HandlerFunc) {
-	group.addRoute("POST", relativePath, handlerFunc)
+	group.addRoute(http.MethodPost, relativePath, handlerFunc)
 }
 
 func (group *RouteGroup) GET(relativePath string, handlerFunc HandlerFunc) {
-	group.addRoute("GET", relativePath, handlerFunc)
+	group.addRoute(http.MethodGet, relativePath, handlerFunc)
 }
