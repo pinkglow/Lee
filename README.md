@@ -1,7 +1,25 @@
 # Lee
 
-## About
+## 简介
 
-A simple, fast, lite web framework of Golang, which named Lee, because it's my second name.
+这是一个简单的Go Web框架，它是基于前后端分离开发而考量的，因此并不支持 MVC 模式。
+参考了 Gin 的设计和部分源码。
 
-Just for fun.
+## 基础功能
+1. 动态路由
+2. 分组
+3. 中间件
+
+## 设计与实现
+### 动态路由
+动态路由主要使用前缀树 (trie) 来实现。可以匹配多种规则的路由：  
+比如 /author/:name 可以匹配 /author/rob，也可以匹配 /author/austin。
+
+未完待续...
+
+## TODO
+1. Logger 中间件
+2. 启动日志
+3. JWT中间件
+
+
