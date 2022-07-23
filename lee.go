@@ -15,9 +15,6 @@ type Engine struct {
 	//engine := lee.New()
 	// engine.Group("/v1")
 	*RouteGroup
-	// 用于匹配请求中的Path属于哪一个group
-	groupMap  map[string]*RouteGroup
-	groupTree *node
 }
 
 // New 方法初始化了Engine，同时Engine也作为一个顶层的Group
@@ -28,6 +25,7 @@ func New() *Engine {
 	// 等属性都是空的，但所有分组共享一个 Engine 实例
 	engine.RouteGroup = &RouteGroup{engine: engine, basePath: ""}
 	engine.groups = []*RouteGroup{engine.RouteGroup}
+	engine.Use(Logger())
 	return engine
 }
 

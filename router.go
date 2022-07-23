@@ -1,6 +1,7 @@
 package lee
 
 import (
+	"log"
 	"net/http"
 	"strings"
 )
@@ -22,6 +23,7 @@ func newRouter() *router {
 
 // addRouter 注册路由
 func (r *router) addRoute(method, pattern string, handler HandlerFunc) {
+	log.Printf("[Lee] [%s] %s", method, pattern)
 	rule := getRouterRule(method, pattern)
 	// 如果没有对应方法的树，则创
 	if root := r.trees.get(method); root == nil {
