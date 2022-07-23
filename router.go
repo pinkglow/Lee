@@ -8,14 +8,14 @@ import (
 // 定义路由的结构体
 type router struct {
 	// 不同方法(如 GET POST) 对应不同的树
-	roots map[string]*node
+	trees methodTrees
 	// 根据路由规则，找到对应的处理器
 	handlers map[string]HandlerFunc
 }
 
 func newRouter() *router {
 	return &router{
-		roots:    make(map[string]*node),
+		trees:    make(methodTrees, 0, 9),
 		handlers: make(map[string]HandlerFunc),
 	}
 }
@@ -23,12 +23,12 @@ func newRouter() *router {
 // addRouter 注册路由
 func (r *router) addRoute(method, pattern string, handler HandlerFunc) {
 	rule := getRouterRule(method, pattern)
-	// 如果没有对应方法的树，则创建
-	if _, ok := r.roots[method]; !ok {
-		r.roots[method] = &node{}
+	// 如果没有对应方法的树，则创
+	if root := r.trees.get(method); root == nil {
+		r.trees = append(r.trees, &methodTree{method: method, root: &node{}})
 	}
 	// 在对应方法的树中插入路径
-	r.roots[method].insertNode(pattern)
+	r.trees.get(method).insertNode(pattern)
 	// 在对应路由规则中，设置 handler
 	r.handlers[rule] = handler
 }
@@ -37,8 +37,8 @@ func (r *router) addRoute(method, pattern string, handler HandlerFunc) {
 func (r *router) getRoute(method, path string) (node *node, params map[string]string) {
 	parts := parsePattern(path)
 	params = make(map[string]string)
-	root, ok := r.roots[method]
-	if !ok {
+	root := r.trees.get(method)
+	if root == nil {
 		// 如果找不到该方法对应的树，直接返回
 		return nil, nil
 	}

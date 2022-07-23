@@ -12,6 +12,25 @@ type node struct {
 	isWild   bool    // 路径包含有 ：或者 * 为 true，否则为 false
 }
 
+// 每种请求方法都有对应的一棵树
+type methodTree struct {
+	method string
+	root   *node
+}
+
+// 不同方法的树放在同一数组中
+type methodTrees []*methodTree
+
+// 由于方法不会很多，所以通过遍历数组就能高效查询，而没必要使用Map
+func (trees methodTrees) get(method string) *node {
+	for _, tree := range trees {
+		if tree.method == method {
+			return tree.root
+		}
+	}
+	return nil
+}
+
 // matchChild 获取第一个与 part 匹配的路径
 func (n *node) matchChild(part string) *node {
 	// 从该节点的子节点遍历
